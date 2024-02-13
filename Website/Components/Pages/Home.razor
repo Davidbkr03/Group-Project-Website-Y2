@@ -1,27 +1,33 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
-
-<div class="main-page @(_showPanel ? "blurred" : "")">
-    <h1>Home Feed</h1>
-
-    <button @onclick="TogglePanel">Show Panel</button>
+<div class="main-page-wrapper">
+    <div class="main-page @(_showPanel ? "main-page-blurred" : "")">
+        <h1>Home Feed</h1>
+        <button @onclick="TogglePanel">Show Panel</button>
+        @foreach (var post in posts)
+        {
+            <Post Content="@post.Content" />
+        }
+    </div>
 
     @if (_showPanel)
     {
-        <Component onClose="TogglePanelAndLoadPosts" />
+        <div class="component-container">
+            <Component onClose="TogglePanelAndLoadPosts" />
+        </div>
     }
 </div>
 
 @foreach (var post in posts)
 {
-    <Post/>
+    <Post Content="@post.Content" />
 }
 
 @code {
     private bool _showPanel = false;
     List<Post> posts = new List<Post>();
+    String postContent = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -34,10 +40,10 @@
         posts.Clear(); // Wipe the posts list before adding new values
         foreach (var file in postFiles)
         {
-            var postContent = await File.ReadAllTextAsync(file);
+            String postContent = await File.ReadAllTextAsync(file);
             var post = new Post { Content = postContent }; // Set the Content property of the Post object
             posts.Add(post);
-            Console.WriteLine(postContent);
+            Console.WriteLine("Testing:" + postContent);
         }
     }
 

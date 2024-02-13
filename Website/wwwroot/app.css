@@ -6,15 +6,13 @@ html, body {
     position: relative; /* To contain the pseudo-element */
 }
 
-.main-page.blurred::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        filter: blur(5px);
-        
+.main-page-blurred {
+    filter: blur(5px); /* Adjust blur level as needed */
+}
+
+.input {
+    width: 100% !important;
+    margin: 0px !important;
 }
 
 .component {
@@ -23,12 +21,24 @@ html, body {
     left: 60%;
     height: 65%;
     width: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-70%, -50%);
     background-color: white;
     padding: 20px;
     border-radius: 15px;
     box-shadow: 9px 9px 20px rgba(0, 0, 0, 0.3);
     z-index: 10;
+}
+
+@media (min-width: 1000) {
+    .content {
+        width: 40%;
+    }
+}
+
+@media (max-width: 1001) {
+    .content {
+        width: 30%;
+    }
 }
 
 
@@ -41,7 +51,9 @@ html, body {
     left: 10%;
     width: 80%;
     height: 80%;
-    caret-color: black; /* Add this line to set the color of the input cursor */
+    border: 2px solid #B19BD8;
+    border-radius: 15px;
+    box-shadow: 9px 9px 20px rgba(0, 0, 0, 0.3);
 }
 
 a, .btn-link {
@@ -60,6 +72,7 @@ a, .btn-link {
 
 .content {
     padding-top: 1.1rem;
+    margin: auto;
 }
 
 h1:focus {
