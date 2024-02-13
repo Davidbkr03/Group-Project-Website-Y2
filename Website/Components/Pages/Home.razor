@@ -3,21 +3,48 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
 <div class="main-page @(_showPanel ? "blurred" : "")">
-    <h1>The Main Page</h1>
+    <h1>Home Feed</h1>
 
     <button @onclick="TogglePanel">Show Panel</button>
 
     @if (_showPanel)
     {
-        <Component onClose="TogglePanel" />
+        <Component onClose="TogglePanelAndLoadPosts" />
     }
 </div>
 
+@foreach (var post in posts)
+{
+    <Post/>
+}
+
 @code {
     private bool _showPanel = false;
+    List<Post> posts = new List<Post>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPostsAsync();
+    }
+
+    private async Task LoadPostsAsync()
+    {
+        var postFiles = Directory.GetFiles("posts", "*.txt");
+        posts.Clear(); // Wipe the posts list before adding new values
+        foreach (var file in postFiles)
+        {
+            var postContent = await File.ReadAllTextAsync(file);
+            var post = new Post();
+            posts.Add(post);
+        }
+    }
+
+    private async Task TogglePanelAndLoadPosts()
+    {
+        TogglePanel();
+        await LoadPostsAsync();
+    }
 
     private void TogglePanel()
     {

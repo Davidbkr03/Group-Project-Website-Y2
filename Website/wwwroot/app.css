@@ -21,7 +21,7 @@ html, body {
     position: fixed;
     top: 50%;
     left: 60%;
-    height: 50%;
+    height: 65%;
     width: 50%;
     transform: translate(-50%, -50%);
     background-color: white;
@@ -29,6 +29,19 @@ html, body {
     border-radius: 15px;
     box-shadow: 9px 9px 20px rgba(0, 0, 0, 0.3);
     z-index: 10;
+}
+
+
+.post {
+    margin: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: white;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    caret-color: black; /* Add this line to set the color of the input cursor */
 }
 
 a, .btn-link {
