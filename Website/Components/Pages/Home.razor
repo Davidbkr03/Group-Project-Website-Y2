@@ -30,13 +30,14 @@
 
     private async Task LoadPostsAsync()
     {
-        var postFiles = Directory.GetFiles("posts", "*.txt");
+        var postFiles = Directory.GetFiles("posts", "*.json");
         posts.Clear(); // Wipe the posts list before adding new values
         foreach (var file in postFiles)
         {
             var postContent = await File.ReadAllTextAsync(file);
-            var post = new Post();
+            var post = new Post { Content = postContent }; // Set the Content property of the Post object
             posts.Add(post);
+            Console.WriteLine(postContent);
         }
     }
 

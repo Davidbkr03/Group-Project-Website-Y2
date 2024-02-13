@@ -1,7 +1,23 @@
 ﻿<h3>Post</h3>
 
-
+<div>
+    <h1>USERNAME</h1>
+    <h4>Time posted:</h4>
+</div>
+<div>
+    <p>under this there should be some text</p>
+    <p>@Content</p>
+    <div>
+        <button class="btn btn-primary">Like</button>
+        <button class="btn btn-primary">Comment</button>
+        <button class="btn btn-primary">Share</button>
+    </div>
+</div>
 
 @code {
+    string postcontent = "This is a post";
+    [Parameter]
+    public String Content { get; set; }
+
 
 }
