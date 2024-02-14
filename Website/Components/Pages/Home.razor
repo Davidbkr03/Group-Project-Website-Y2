@@ -2,7 +2,7 @@
 @rendermode InteractiveServer
 
 <div class="main-page-wrapper">
-    <div class="main-page @(_showPanel ? "main-page-blurred" : "")">
+    <div class="main-page @backgroundblur">
         <h1>Home Feed</h1>
         <button @onclick="TogglePanel">Show Panel</button>
         @foreach (var post in posts)
@@ -10,24 +10,21 @@
             <Post Content="@post.Content" />
         }
     </div>
-
+    <div class="component-container @_componentContainerClass">
     @if (_showPanel)
     {
-        <div class="component-container">
-            <Component onClose="TogglePanelAndLoadPosts" />
-        </div>
+            <Component onClose="TogglePanelAndLoadPosts" />   
     }
+    </div>
 </div>
-
-@foreach (var post in posts)
-{
-    <Post Content="@post.Content" />
-}
 
 @code {
     private bool _showPanel = false;
     List<Post> posts = new List<Post>();
     String postContent = "";
+    private bool _isComponentExiting = false; // New state
+    private string backgroundblur = ""; // New state
+    private string _componentContainerClass = ""; // Initially no class
 
     protected override async Task OnInitializedAsync()
     {
@@ -47,14 +44,31 @@
         }
     }
 
+    
+
     private async Task TogglePanelAndLoadPosts()
     {
         TogglePanel();
         await LoadPostsAsync();
     }
 
-    private void TogglePanel()
+    private async void TogglePanel()
     {
-        _showPanel = !_showPanel;
+        if (_showPanel) // Handle closing the panel
+        {
+            _isComponentExiting = true;
+            _componentContainerClass = ""; // Remove 'show' class immediately for fade-out
+            backgroundblur = "";
+            await Task.Delay(300); // Wait for fade-out
+            _showPanel = false; // Now actually hide the panel
+            _isComponentExiting = false;
+        }
+        else // Handle opening the panel
+        {
+            _showPanel = true;
+            _componentContainerClass = "show"; // Add 'show' class for immediate visibility
+            backgroundblur = "main-page-blurred";
+        }
+        //await LoadPostsAsync();
     }
 }

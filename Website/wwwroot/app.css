@@ -4,6 +4,12 @@ html, body {
 
 .main-page {
     position: relative; /* To contain the pseudo-element */
+    transition: filter 0.3s ease-in-out;
+}
+
+.main-page-wrapper {
+    width: 50%;
+    margin: auto;
 }
 
 .main-page-blurred {
@@ -29,6 +35,20 @@ html, body {
     z-index: 10;
 }
 
+.component-container {
+    opacity: 0; /* Initially hidden */
+    transition: opacity 0.3s ease-in-out;
+}
+
+.component-container.show { /* Class to apply when visible */
+        opacity: 1;
+}
+
+.component-container.exiting {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+}
+
 @media (min-width: 1000) {
     .content {
         width: 40%;
@@ -43,13 +63,13 @@ html, body {
 
 
 .post {
-    margin: 20px;
+    margin: 20px auto;
     padding: 20px;
     border-radius: 15px;
     background-color: white;
     top: 10%;
     left: 10%;
-    width: 80%;
+    width: 60%;
     height: 80%;
     border: 2px solid #B19BD8;
     border-radius: 15px;
@@ -73,6 +93,7 @@ a, .btn-link {
 .content {
     padding-top: 1.1rem;
     margin: auto;
+    background: linear-gradient(135deg, #9901bd, #100627);
 }
 
 h1:focus {
