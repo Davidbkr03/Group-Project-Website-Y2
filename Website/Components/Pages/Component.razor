@@ -5,11 +5,22 @@
 @using System.Net.Http
 @using System.Text.Json
 @using System.Text
+@using System.Net.Http.Headers;
+@using Newtonsoft.Json;
+@inject IWebHostEnvironment webHostEnvironment
 @rendermode InteractiveServer
 
 <div class="component">
     <h3>Speak to AI</h3>
     <InputTextArea class="post input" type="text" @bind-Value="@userInput" />
+
+    <InputFile OnChange="HandleImageUpload" accept=".jpg, .jpeg" />
+
+    @if (imagePreviewUrl != null)
+    {
+        <img src="@imagePreviewUrl" style="max-width: 50px" />
+    }
+
     <div class="options">
         <button class="btn btn-primary" @onclick="AIResponseTest">Post</button>
         <button class="btn" @onclick="ClosePanel">Close</button>
@@ -22,14 +33,105 @@
 @code {
     private string userInput = "";
     private string aiResponse = "";
-
     [Parameter] public EventCallback onClose { get; set; }
+
+    private IBrowserFile selectedFile;
+    private string imagePreviewUrl;
+    private const long maxFileSize = 1048576; // 1 MB
+
+    async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+
+        // Simple client-side validation
+        if (selectedFile != null)
+        {
+            if (selectedFile.Size > maxFileSize)
+            {
+                // Display an error message for file size
+                Console.WriteLine("Image size exceeds limit.");
+                return;
+            }
+
+            if (!selectedFile.ContentType.StartsWith("image/jpeg"))
+            {
+                // Display an error for incorrect file type
+                Console.WriteLine("Invalid file type. Only JPEG is allowed.");
+                return;
+            }
+
+            // Preview (Optional)
+            imagePreviewUrl = await CreatePreviewUrl(selectedFile);
+
+            // Process the file
+            await ProcessUploadedFile();
+        }
+    }
+
+    async Task<string> CreatePreviewUrl(IBrowserFile file)
+    {
+        var memoryStream = new MemoryStream();
+        await file.OpenReadStream().CopyToAsync(memoryStream);
+
+        var imageData = memoryStream.ToArray();
+        var base64String = $"data:image/jpeg;base64,{Convert.ToBase64String(imageData)}";
+        return base64String;
+    }
+
+    async Task ProcessUploadedFile()
+    {
+        var uploadsPath = Path.Combine(webHostEnvironment.WebRootPath, "Uploads");
+        Directory.CreateDirectory(uploadsPath); // Create uploads directory if needed
+
+        var filePath = Path.Combine(uploadsPath, selectedFile.Name);
+        await using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await selectedFile.OpenReadStream().CopyToAsync(stream);
+        }
+
+        await SendTestImage(filePath);
+    }
+
+    static async Task SendTestImage(string imgPath)
+    {
+        string imagePath = imgPath;
+        string url = "http://localhost:5000/classify";
+
+        using (var client = new HttpClient())
+        {
+            using (var content = new MultipartFormDataContent())
+            {
+                // Read the image file
+                byte[] imageData = File.ReadAllBytes(imagePath);
+                var imageContent = new ByteArrayContent(imageData);
+                imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+
+                // Add the image to the form data
+                content.Add(imageContent, "image", Path.GetFileName(imagePath));
+
+                // Send the request
+                var response = await client.PostAsync(url, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    dynamic result = JsonConvert.DeserializeObject(responseString);
+                    Console.WriteLine("Test result: {0}", result); // Access properties of 'result' here
+                }
+                else
+                {
+                    Console.WriteLine("Error: {0}", await response.Content.ReadAsStringAsync());
+                }
+            }
+        }
+    }
 
     private async Task ClosePanel()
     {
+        userInput = ""; // Clear the textbox
+        imagePreviewUrl = null; // Clear the image preview
         await onClose.InvokeAsync();
     }
-    
 
     private async Task AIResponseTest()
     {
@@ -40,22 +142,22 @@
         {
             messages = new[]
             {
-        new { role = "system", content = systemContent },
-        new { role = "user", content = userInput }
-    },
+                new { role = "system", content = systemContent },
+                new { role = "user", content = userInput }
+            },
             temperature = 0.4,
             max_tokens = 1,
             stream = false
         };
         // Serialize the object to JSON
-        var requestContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+        var requestContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
         // Send the POST request to the Copilot endpoint
         HttpResponseMessage response = await client.PostAsync("http://localhost:1234/v1/chat/completions", requestContent);
         // Get the response content
         HttpContent responseContent = response.Content;
         string responseBody = await responseContent.ReadAsStringAsync();
         // Deserialize the response content to a JSON object
-        var responseObject = JsonSerializer.Deserialize<JsonElement>(responseBody);
+        var responseObject = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(responseBody);
         // Extract the "content" value from the response
         string aiResponseContent = responseObject.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
         // Assign the response content to the aiResponse variable
@@ -69,17 +171,14 @@
             saveInput();
         }
         ClosePanel();
-
     }
 
     private void saveInput()
     {
-        
-            string fileName = GenerateRandomFileName();
-            string filePath = Path.Combine("posts", fileName);
-            string jsonContent = JsonSerializer.Serialize(new { userInput });
-            File.WriteAllText(filePath, jsonContent);
-        
+        string fileName = GenerateRandomFileName();
+        string filePath = Path.Combine("posts", fileName);
+        string jsonContent = System.Text.Json.JsonSerializer.Serialize(new { userInput });
+        File.WriteAllText(filePath, jsonContent);
     }
 
     public static string GenerateRandomString(int length)
@@ -98,8 +197,6 @@
 
     private string GenerateRandomFileName()
     {
-
-
         Random random = new Random();
         int randomNumber = random.Next(1, 7);
         string fileName;
