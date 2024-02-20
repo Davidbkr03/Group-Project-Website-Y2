@@ -81,15 +81,20 @@
     async Task ProcessUploadedFile()
     {
         var uploadsPath = Path.Combine(webHostEnvironment.WebRootPath, "Uploads");
+        var filePath = Path.Combine(uploadsPath, selectedFile.Name);
+
+        await SendTestImage(filePath);
+
+        
         Directory.CreateDirectory(uploadsPath); // Create uploads directory if needed
 
-        var filePath = Path.Combine(uploadsPath, selectedFile.Name);
+        
         await using (var stream = new FileStream(filePath, FileMode.Create))
         {
             await selectedFile.OpenReadStream().CopyToAsync(stream);
         }
 
-        await SendTestImage(filePath);
+        
     }
 
     static async Task SendTestImage(string imgPath)
