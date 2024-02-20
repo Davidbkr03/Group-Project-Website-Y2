@@ -63,7 +63,7 @@ html, body {
 
 
 .post {
-    margin: 20px auto;
+    margin: 40px auto;
     padding: 20px;
     border-radius: 15px;
     background-color: white;
@@ -93,7 +93,6 @@ a, .btn-link {
 .content {
     padding-top: 1.1rem;
     margin: auto;
-    background: linear-gradient(135deg, #9901bd, #100627);
 }
 
 h1:focus {
