@@ -1,5 +1,6 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: rgb(26, 26, 26)
 }
 
 .main-page {
@@ -73,14 +74,14 @@ html, body {
     height: 80%;
     border: 2px solid #B19BD8;
     border-radius: 15px;
-    box-shadow: 9px 9px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 9px 9px 15px rgb(74, 74, 74);
 }
 
 a, .btn-link {
     color: #006bb7;
 }
 
-.btn-primary {
+.btn-primary-backup {
     color: #fff;
     background-color: #1b6ec2;
     border-color: #1861ac;
@@ -123,4 +124,79 @@ h1:focus {
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
+}
+
+.btn-primary {
+    
+    padding: 0.6em 2em;
+    border: none;
+    outline: none;
+    color: rgb(255, 255, 255);
+    background: #111;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+    .btn-primary:before {
+        content: "";
+        background: linear-gradient( 45deg, rgb(0, 0, 0 ), rgb(40, 40, 40 ), rgb(80, 80, 80 ), rgb(120, 120, 120 ), rgb(160, 160, 160 ), rgb(200, 200, 200 ), rgb(240, 240, 240 ));
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        background-size: 400%;
+        z-index: -1;
+        filter: blur(5px);
+        -webkit-filter: blur(5px);
+        width: calc(100% + 4px);
+        height: calc(100% + 4px);
+        animation: glowing-button-85 20s linear infinite;
+        transition: opacity 0.3s ease-in-out;
+        border-radius: 10px;
+    }
+
+@keyframes glowing-button-85 {
+    0% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 400% 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+.btn-primary:after {
+    z-index: -1;
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #222;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+.none-post {
+    color: white;
+}
+
+.create-account {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    z-index: 10;
 }
