@@ -95,3 +95,11 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+}
+
+
+
+

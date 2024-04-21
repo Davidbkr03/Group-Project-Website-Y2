@@ -2,20 +2,35 @@
 @rendermode InteractiveServer
 
 <div class="main-page-wrapper">
-    <div class="main-page @backgroundblur">
-        <h1 class="none-post">Home Feed</h1>
-        <button class="btn-primary" @onclick="TogglePanel">Show Panel</button>
-        @foreach (var post in posts)
-        {
-            <Post Content="@post.Content" />
-        }
+    
+    <div class="main-content">
+        <div class="main-page @backgroundblur">
+            <h1 class="none-post">Home Feed</h1>
+            <button class="btn-primary" @onclick="TogglePanel">Make post</button>
+            @foreach (var post in posts)
+            {
+                <Post Content="@post.Content" />
+            }
+        </div>
+        <div class="component-container @_componentContainerClass">
+            @if (_showPanel)
+            {
+                <Component onClose="TogglePanelAndLoadPosts" />
+            }
+        </div>
     </div>
-    <div class="component-container @_componentContainerClass">
-    @if (_showPanel)
-    {
-            <Component onClose="TogglePanelAndLoadPosts" />   
-    }
+
+    <div class="sidebar post">
+        <h3>Filter Content</h3>
+        <ul>
+            <li><button class="btn-secondary" role="button"> <span class="text"> All</span> </button></li>
+            <li><button class="btn-secondary" role="button"> <span class="text"> News</span> </button></li>
+            <li><button class="btn-secondary" role="button"> <span class="text"> Sports</span> </button></li>
+            <li><button class="btn-secondary" role="button"> <span class="text"> Technology</span> </button></li>
+        </ul>
     </div>
+
+    
 </div>
 
 @code {
