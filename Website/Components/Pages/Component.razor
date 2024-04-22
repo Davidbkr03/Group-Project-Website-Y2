@@ -8,13 +8,14 @@
 @using System.Net.Http.Headers;
 @using Newtonsoft.Json;
 @inject IWebHostEnvironment webHostEnvironment
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 <div class="component">
-    <h3>Speak to AI</h3>
+    <h3>Write a post</h3>
     <InputTextArea class="post input" type="text" @bind-Value="@userInput" />
 
-    <InputFile OnChange="HandleImageUpload" accept=".jpg, .jpeg" />
+    <InputFile OnChange="HandleImageUpload" accept=".jpg, .jpeg" class="btn-secondary"/>
 
     @if (imagePreviewUrl != null)
     {
@@ -25,8 +26,6 @@
         <button class="btn btn-primary" @onclick="AIResponseTest">Post</button>
         <button class="btn" @onclick="ClosePanel">Close</button>
     </div>
-    <h4>AI Response: </h4>
-    <p>@aiResponse</p>
 </div>
 
 
@@ -85,16 +84,16 @@
 
         await SendTestImage(filePath);
 
-        
+
         Directory.CreateDirectory(uploadsPath); // Create uploads directory if needed
 
-        
+
         await using (var stream = new FileStream(filePath, FileMode.Create))
         {
             await selectedFile.OpenReadStream().CopyToAsync(stream);
         }
 
-        
+
     }
 
     static async Task SendTestImage(string imgPath)
@@ -178,11 +177,12 @@
         ClosePanel();
     }
 
-    private void saveInput()
+    private async Task saveInput()
     {
         string fileName = GenerateRandomFileName();
         string filePath = Path.Combine("posts", fileName);
-        string jsonContent = System.Text.Json.JsonSerializer.Serialize(new { userInput });
+        string jsonContent = System.Text.Json.JsonSerializer.Serialize(new {userInput = userInput });
+
         File.WriteAllText(filePath, jsonContent);
     }
 

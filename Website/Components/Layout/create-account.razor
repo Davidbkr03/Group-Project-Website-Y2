@@ -1,5 +1,7 @@
 ﻿@page "/create-account"
 @rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+
 
 <div class="create-account">
     <h3>Create Account</h3>
@@ -18,11 +20,15 @@
 
     <div>
         <input type="checkbox" id="privacyPolicy" name="privacyPolicy" @onchange="TogglePrivacyPolicy" />
-        <label for="privacyPolicy">I agree to the <a href="/privacy-policy">Privacy Policy</a></label>
+        <label for="privacyPolicy">I agree to the <a href="/Terms">Privacy Policy</a></label>
     </div>
     @if (!privacyPolicyChecked || !accountCreated)
     {
         <button type="submit" class="btn-secondary" @onclick="CreateAccount">Create Account</button>
+    }
+    else 
+        {
+        <button type="submit" class="btn-secondary" @onclick="Complete">I have written down my password</button>
     }
 
     
@@ -47,6 +53,11 @@
 @code {
     private bool privacyPolicyChecked = false;
     private bool accountCreated = false;
+
+    private async Task Complete()
+    {
+        await JSRuntime.InvokeVoidAsync("window.open", new Uri("/", UriKind.RelativeOrAbsolute).ToString(), "_blank");
+    }
 
     private void TogglePrivacyPolicy(ChangeEventArgs e)
     {
@@ -74,13 +85,8 @@
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
-    private void WritePasswordToCookie(string password)
+    private async Task WritePasswordToCookie(string password)
     {
-        // Set the password as a cookie
-        var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions
-        {
-            Expires = DateTime.Now.AddDays(1)
-        };
-        HttpContext.Response.Cookies.Append("password", password, cookieOptions);
+        await JSRuntime.InvokeVoidAsync("setCookie", "MyCookie", password, 1);
     }
 }

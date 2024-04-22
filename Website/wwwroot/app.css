@@ -3,6 +3,10 @@ html, body {
     background-color: rgb(26, 26, 26)
 }
 
+.logo{
+    height: 50px;
+}
+
 .main-page {
     position: relative; /* To contain the pseudo-element */
     transition: filter 0.3s ease-in-out;
@@ -27,7 +31,7 @@ html, body {
     position: fixed;
     top: 50%;
     left: 60%;
-    height: 65%;
+    height: 80%;
     width: 50%;
     transform: translate(-70%, -50%);
     background-color: white;

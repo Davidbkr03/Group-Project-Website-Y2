@@ -1,10 +1,14 @@
 using Website.Components;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Register IHttpContextAccessor service
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

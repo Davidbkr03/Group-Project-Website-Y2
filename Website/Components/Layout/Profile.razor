@@ -1,0 +1,33 @@
+﻿@page "/Profile"
+@rendermode InteractiveServer
+
+<h3 class="none-post">Profile Page</h3>
+
+<div>
+    <h4 class="none-post">Posts:</h4>
+    @foreach (var post in posts)
+    {
+        <Post Content="@post.Content" />
+    }
+</div>
+
+@code {
+    List<Post> posts = new List<Post>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPostsAsync();
+    }
+
+    private async Task LoadPostsAsync()
+    {
+        var postFiles = Directory.GetFiles("posts", "y.json");
+        posts.Clear();
+        foreach (var file in postFiles)
+        {
+            String postContent = await File.ReadAllTextAsync(file);
+            var post = new Post { Content = postContent };
+            posts.Add(post);
+        }
+    }
+}

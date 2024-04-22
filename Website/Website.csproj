@@ -8,9 +8,19 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.12" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="IronPython" Version="3.4.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenAI" Version="1.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\PLS\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\cookie.js" />
+    <None Include="wwwroot\image-profile.png" />
   </ItemGroup>
 
 </Project>

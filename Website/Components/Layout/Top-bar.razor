@@ -1,12 +1,22 @@
 ﻿@page "/top-bar"
 @rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
 
 <div class="top-bar">
                     <div class="logo">
-                        <img src="logo.png" alt="Logo" />
+                        <img src="image-logo.png" alt="Logo" class="logo"/>
                     </div>
                     <div class="profile">
-                        <button class="btn-secondary" @onclick="TogglePanel">Show Panel</button>
+                        @if (!cookieExists)
+                        {
+                            <button class="btn-secondary" @onclick="TogglePanelLogin">Log In</button>
+                        }
+                        else
+                        {
+                            <button class="" @onclick="TogglePanelProfile">
+                                <img src="image-profile.png" alt="Profile" class="logo"/>
+                            </button>
+                        }
                     </div>
     <div class="component-container @_componentContainerClass">
         @if (_showPanel)
@@ -18,16 +28,33 @@
 
 @code {
     private bool _showPanel = false;
+    private bool cookieExists = false;
     private bool _isComponentExiting = false; // New state
+    private bool isJavaScriptInteropExecuted = false;
     private string _componentContainerClass = ""; // Initially no class
     private string backgroundblur = ""; // New state
 
     private async Task TogglePanelAndLoadPosts()
     {
-        TogglePanel();
+        TogglePanelLogin();
     }
 
-    private async void TogglePanel()
+    private async Task TogglePanelProfile()
+    {
+        await JSRuntime.InvokeVoidAsync("window.open", new Uri("/Profile", UriKind.RelativeOrAbsolute).ToString(), "_blank");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            cookieExists = await JSRuntime.InvokeAsync<bool>("checkCookieExists", "MyCookie");
+            StateHasChanged(); // Request a re-render with the new state
+        }
+    }
+
+
+    private async void TogglePanelLogin()
     {
 
         if (_showPanel) // Handle closing the panel
