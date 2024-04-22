@@ -1,39 +1,86 @@
 ﻿@page "/create-account"
+@rendermode InteractiveServer
 
 <div class="create-account">
     <h3>Create Account</h3>
 
     <div>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" class="form-control"/>
+        <p>because of the nature of the platform your Password will be generated for you. If you would like to learn more click here.</p>
     </div>
 
     <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" class="form-control" />
+        <label for="password">Password: </label>
+        @if (privacyPolicyChecked && accountCreated)
+        {
+            @GeneratePassword()
+        }
     </div>
 
     <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" class="form-control" />
-    </div>
-
-    <div>
-        <label for="confirmPassword">Confirm Password:</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" />
-    </div>
-
-    <div>
-        <input type="checkbox" id="privacyPolicy" name="privacyPolicy" />
+        <input type="checkbox" id="privacyPolicy" name="privacyPolicy" @onchange="TogglePrivacyPolicy" />
         <label for="privacyPolicy">I agree to the <a href="/privacy-policy">Privacy Policy</a></label>
     </div>
+    @if (!privacyPolicyChecked || !accountCreated)
+    {
+        <button type="submit" class="btn-secondary" @onclick="CreateAccount">Create Account</button>
+    }
 
+    
 
-    <button type="submit" class="btn-secondary">Create Account</button>
-
+    <div>
+        @if (!privacyPolicyChecked && accountCreated)
+        {
+            <span>You must agree to the privacy policy to create an account.</span>
+        }
+        <p>
+            When you click create account your password will be shown.
+        </p>
+        <p>
+            @if (privacyPolicyChecked && accountCreated)
+            {
+                <span>Your account has been created.</span>
+            }
+        </p>
+    </div>
 </div>
 
-
 @code {
-    // Add account creation logic here
+    private bool privacyPolicyChecked = false;
+    private bool accountCreated = false;
+
+    private void TogglePrivacyPolicy(ChangeEventArgs e)
+    {
+        privacyPolicyChecked = (bool)e.Value;
+    }
+
+    private void CreateAccount()
+    {
+        accountCreated = true;
+    }
+
+    private string GeneratePassword()
+    {
+        string password = GenerateRandomString(7, 15);
+        WritePasswordToCookie(password); // Write password as a cookie
+        return password;
+    }
+
+    private string GenerateRandomString(int minLength, int maxLength)
+    {
+        string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        int length = random.Next(minLength, maxLength + 1);
+        return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+    }
+
+    private void WritePasswordToCookie(string password)
+    {
+        // Set the password as a cookie
+        var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions
+        {
+            Expires = DateTime.Now.AddDays(1)
+        };
+        HttpContext.Response.Cookies.Append("password", password, cookieOptions);
+    }
 }
